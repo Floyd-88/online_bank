@@ -1,0 +1,7 @@
+@import './NORMALIZE_STYLE.css';
+@import './fonts.css';
+
+body {
+  background-color: rgb(71 71 108);
+  font-family: "Montserrat", sans-serif;
+}
