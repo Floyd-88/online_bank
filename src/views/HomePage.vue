@@ -5,12 +5,21 @@ import TableHome from '@/components/home/TableHome.vue'
 import AppLoader from '@/components/ui/AppLoader.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppPage from '@/components/ui/AppPage.vue'
+import type { RequestI } from '@/types/types'
 import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 
+const store = useStore()
+
 const isModal = ref(false)
 const isLoader = ref(false)
-const store = useStore()
+const filter = ref<
+  Partial<{
+    name: string
+    status: 'active' | 'cancelled' | 'completed' | 'pending' | ''
+  }>
+>({})
+
 function modalOpen(bool: boolean) {
   isModal.value = bool
 }
@@ -21,7 +30,18 @@ onMounted(async () => {
   isLoader.value = false
 })
 
-const requests = computed(() => store.getters['request/getRequests'])
+const requests = computed(() => {
+  const allRequests: RequestI[] = store.getters['request/getRequests']
+  return allRequests.filter((request) => {
+    const normalizedFilterName = filter.value.name?.trim().toLowerCase() || ''
+    const normalizedRequestName = request.name.trim().toLowerCase()
+
+    const filterName = normalizedFilterName ? normalizedRequestName.includes(normalizedFilterName) : true
+    const filterStatus = filter.value.status ? request.status === filter.value.status : true
+
+    return filterName && filterStatus
+  })
+})
 </script>
 
 <template>
@@ -30,7 +50,7 @@ const requests = computed(() => store.getters['request/getRequests'])
       <button class="btn__create" @click="modalOpen(true)">СОЗДАТЬ</button>
     </template>
 
-    <FilterHome />
+    <FilterHome v-model="filter"/>
 
     <TableHome :requests="requests" />
     <div v-if="isLoader">

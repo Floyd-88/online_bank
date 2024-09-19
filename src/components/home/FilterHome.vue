@@ -1,14 +1,40 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+const emit = defineEmits<{
+  (
+    e: 'update:modelValue',
+    payload: { name: string; status: 'active' | 'cancelled' | 'completed' | 'pending' | '' }
+  ): void  
+}>()
+
+const name = ref('')
+const status = ref<'active' | 'cancelled' | 'completed' | 'pending' | ''>('')
+
+watch([name, status], (val) => {
+  emit('update:modelValue', {
+    name: val[0],
+    status: val[1]
+  })
+})
+
+function clickReset() {
+  name.value = ""
+  status.value = ""
+}
+</script>
 
 <template>
   <div class="block-filters">
-    <input class="block-filters__input" type="text" placeholder="Поиск по имени" />
-    <select class="block-filters__select" name="" id="">
-      <option value="">Активен</option>
-      <option value="">Завершен</option>
-      <option value="">Отменен</option>
-      <option value="">В ожидание</option>
+    <input class="block-filters__input" type="text" placeholder="Поиск по имени" v-model="name" />
+    <select class="block-filters__select" v-model="status">
+      <option disabled selected value="">Выберите статус</option>
+      <option value="active">Активен</option>
+      <option value="completed">Завершен</option>
+      <option value="cancelled">Отменен</option>
+      <option value="pending">В ожидание</option>
     </select>
+    <button class="block-filters__btn" @click="clickReset">Очистить</button>
   </div>
 </template>
 
@@ -34,6 +60,20 @@
     padding: 5px;
     min-width: 200px;
     cursor: pointer;
+  }
+
+  &__btn {
+    background-color: #d4d4d4;
+    color: black;
+    padding: 5px 15px;
+    border: 1px solid #d4d4d4;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: rgb(168, 175, 168);
+    }
   }
 }
 </style>
