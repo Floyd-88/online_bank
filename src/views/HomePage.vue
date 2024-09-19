@@ -2,16 +2,26 @@
 import FilterHome from '@/components/home/FilterHome.vue'
 import ModalHome from '@/components/home/ModalHome.vue'
 import TableHome from '@/components/home/TableHome.vue'
+import AppLoader from '@/components/ui/AppLoader.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppPage from '@/components/ui/AppPage.vue'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
 
 const isModal = ref(false)
-
+const isLoader = ref(false)
+const store = useStore()
 function modalOpen(bool: boolean) {
-    isModal.value = bool
+  isModal.value = bool
 }
 
+onMounted(async () => {
+  isLoader.value = true
+  await store.dispatch('request/load')
+  isLoader.value = false
+})
+
+const requests = computed(() => store.getters['request/getRequests'])
 </script>
 
 <template>
@@ -22,10 +32,13 @@ function modalOpen(bool: boolean) {
 
     <FilterHome />
 
-    <TableHome />
+    <TableHome :requests="requests" />
+    <div v-if="isLoader">
+      <AppLoader />
+    </div>
     <teleport to="body">
       <AppModal v-if="isModal" title="Создать заявку" @closeModal="modalOpen">
-        <ModalHome />
+        <ModalHome @closeModal="modalOpen" />
       </AppModal>
     </teleport>
   </AppPage>

@@ -1,65 +1,39 @@
 <script setup lang="ts">
+import type { RequestI } from '@/types/types'
+import { currency } from '@/utils/sum';
+import AppStatus from '../ui/AppStatus.vue';
+
+defineProps<{ requests: RequestI[] }>()
 </script>
 
 <template>
-    <table class="table">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>ФИО</th>
-      <th>Телефон</th>
-      <th>Сумма</th>
-      <th>Статус</th>
-      <th>Действие</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Иванов Иван Иванович</td>
-      <td>+757348534564</td>
-      <td>1 000 000,00 Р</td>
-      <td><span class="table__status table__status--color-green">Активен</span></td>
-      <td>
-        <button class="btn-open">Открыть</button>
-      </td>
-    </tr>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>ФИО</th>
+        <th>Телефон</th>
+        <th>Сумма</th>
+        <th>Статус</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(request, index) in requests" :key="request.id">
+        <td>{{ index + 1 }}</td>
+        <td>{{ request.name }}</td>
+        <td>{{ request.phone }}</td>
+        <td>{{ currency(request.sum) }}</td>
+        <td>
+          <AppStatus :status="request.status"/>
+        </td>
+        <td>
+          <button class="btn-open">Открыть</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <tr>
-      <td>1</td>
-      <td>Иванов Иван Иванович</td>
-      <td>+757348534564</td>
-      <td>1 000 000,00 Р</td>
-      <td><span class="table__status table__status--color-green">Завершен</span></td>
-      <td>
-        <button class="btn-open">Открыть</button>
-      </td>
-    </tr>
-
-    <tr>
-      <td>1</td>
-      <td>Иванов Иван Иванович</td>
-      <td>+757348534564</td>
-      <td>1 000 000,00 Р</td>
-      <td><span class="table__status table__status--color-red">Отменен</span></td>
-      <td>
-        <button class="btn-open">Открыть</button>
-      </td>
-    </tr>
-
-    <tr>
-      <td>1</td>
-      <td>Иванов Иван Иванович</td>
-      <td>+757348534564</td>
-      <td>1 000 000,00 Р</td>
-      <td><span class="table__status table__status--color-green">В ожидание</span></td>
-      <td>
-        <button class="btn-open">Открыть</button>
-      </td>
-    </tr>
-
-  </tbody>
-</table>
 </template>
 
 <style scoped lang="scss">
@@ -78,7 +52,8 @@
   font-size: 15px;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 12px 15px;
   border: 1px solid #ddd;
 }
@@ -92,17 +67,17 @@
 }
 
 .btn-open {
-    background-color: transparent;
-    color: #48ba48;
-    padding: 5px 15px;
-    border: 1px solid #48ba48;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: transparent;
+  color: #48ba48;
+  padding: 5px 15px;
+  border: 1px solid #48ba48;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
-    &:hover {
-      background-color:#c4dbc4
-    }
+  &:hover {
+    background-color: #c4dbc4;
+  }
 }
 
 .table td {
@@ -113,21 +88,5 @@
   text-align: center;
 }
 
-.table__status {
-
-    padding: 4px 5px;
-    border-radius: 15px;
-    font-size: 15px;
-}
-
-.table__status--color-green {
-    border: 1px solid #69a269;
-    color: #69a269;
-}
-
-.table__status--color-red {
-    border: 1px solid red;
-    color: red;
-}
 
 </style>

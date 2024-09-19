@@ -1,9 +1,11 @@
 import { createStore } from "vuex";
-import auth from './modules/auth.modules'
-import type { AlertI, RootState } from "@/types/types";
+import auth from '@/store/modules/auth.module'
+import request from '@/store/modules/request.module'
+
+import type { AlertI, AuthState } from "@/types/types";
 
 
-const store =  createStore<RootState>({
+const store =  createStore<AuthState>({
   state() {
     return {
       alert: null
@@ -11,11 +13,11 @@ const store =  createStore<RootState>({
   },
 
   mutations: {
-    setAlert(state: RootState, alert: AlertI) {
+    setAlert(state: AuthState, alert: AlertI) {
       state.alert = alert
     },
 
-    clearAlert(state: RootState) {
+    clearAlert(state: AuthState) {
       state.alert = null
     }
   },
@@ -30,13 +32,14 @@ const store =  createStore<RootState>({
   },
 
   getters: {
-    getAlert(state: RootState): AlertI | null {
+    getAlert(state: AuthState): AlertI | null {
       return state.alert
     }
   },
 
   modules: {
-    auth
+    auth, 
+    request
   }
 })
 export default store
