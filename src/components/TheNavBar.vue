@@ -67,8 +67,15 @@ router.push("/auth")
       &:hover::after {
         width: 100%;
       }
+
+
     }
 
   }
 }
+
+.active {
+  font-weight: 600;
+} 
+
 </style>

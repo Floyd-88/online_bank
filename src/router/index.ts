@@ -6,9 +6,13 @@ import MessagePage from '@/views/MessagePage.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import store from '@/store'
+import RequestPage from '@/views/RequestPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  linkActiveClass: 'active',
+  linkExactActiveClass: 'active',
+
   routes: [
     {
       path: '/',
@@ -19,6 +23,15 @@ const router = createRouter({
           path: '/',
           name: 'home',
           component: HomePage,
+          meta: {
+            layout: 'main',
+            auth: true
+          }
+        },
+        {
+          path: '/request/:id',
+          name: 'request',
+          component: RequestPage,
           meta: {
             layout: 'main',
             auth: true
