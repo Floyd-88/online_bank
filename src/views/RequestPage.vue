@@ -4,7 +4,7 @@ import AppPage from '@/components/ui/AppPage.vue'
 import AppStatus from '@/components/ui/AppStatus.vue'
 import type { RequestI } from '@/types/types'
 import { currency } from '@/utils/sum'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -13,8 +13,10 @@ const route = useRoute()
 const store = useStore()
 
 const request = ref<RequestI | null>(null)
-const status = ref<'active' | 'cancelled' | 'completed' | 'pending'  | null>(null)
+const status = ref<'active' | 'cancelled' | 'completed' | 'pending' | null>(null)
 const isLoader = ref(false)
+
+const hasChanges = computed(() => request.value?.status !== status.value)
 
 function backPage() {
   router.go(-1)
@@ -32,7 +34,7 @@ function updateClick() {
       status: status.value,
       id: route.params.id
     })
-    if(status.value) {
+    if (status.value) {
       request.value.status = status.value
     }
   }
@@ -42,8 +44,8 @@ onMounted(async () => {
   isLoader.value = true
   request.value = await store.dispatch('request/loadOneRequest', route.params.id)
   if (request.value) {
-      status.value = request.value.status
-    }
+    status.value = request.value.status
+  }
   isLoader.value = false
 })
 
@@ -83,11 +85,12 @@ watch(request, (newRequest) => {
             <option value="cancelled">Отменен</option>
             <option value="pending">Выполняется</option>
           </select>
-          <button class="request__btn request__btn--update" @click="updateClick">Обновить</button>
         </div>
       </div>
-
-      <button class="request__btn request__btn--remove" @click="removeClick">УДАЛИТЬ</button>
+      <div class="request__block__btn">
+        <button class="request__btn request__btn--remove" @click="removeClick">УДАЛИТЬ</button>
+        <button class="request__btn request__btn--update" v-if="hasChanges" @click="updateClick">Обновить</button>
+      </div>
     </div>
     <div v-else class="request__not">Заявка не найдена</div>
   </AppPage>
@@ -136,6 +139,9 @@ watch(request, (newRequest) => {
       min-width: 200px;
     }
   }
+  &__block__btn {
+    display: flex;
+  }
 
   &__btn {
     margin-right: 10px;
@@ -167,6 +173,8 @@ watch(request, (newRequest) => {
     font-size: 18px;
     font-weight: 600;
   }
+
+
 }
 
 .back-btn {

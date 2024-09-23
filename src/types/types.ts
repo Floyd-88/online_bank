@@ -30,3 +30,8 @@ alert: AlertI,
 token: TokenI,
 request: RequestI
 }
+
+export interface QuestionsI {
+  title: string,
+  text: string,
+} 
