@@ -11,13 +11,13 @@ const route = useRoute()
 
 const store = useStore()
 const formTitle = ref('Войдите в систему')
-const isForm = ref('login')
+const isForm = ref<'login' | 'register'>('login')
 
-function registerForm() {
+function toggleForm() {
   if (isForm.value === 'login') {
     isForm.value = 'register'
     formTitle.value = 'Регистрация'
-  } else if (isForm.value === 'register') {
+  } else {
     isForm.value = 'login'
     formTitle.value = 'Войдите в систему'
   }
@@ -29,7 +29,28 @@ const validationSchema = yup.object({
   password: yup
     .string()
     .required('Пароль обязателен')
-    .min(6, 'Пароль должен быть не менее 6 символов')
+    .min(6, 'Пароль должен быть не менее 6 символов'),
+  confirmPassword: yup
+    .string()
+    .when('isForm', {
+      is: () => isForm.value === 'register', // Условие для регистрации
+      then: schema => schema.required('Подтверждение пароля обязательно').oneOf([yup.ref('password')], 'Пароли должны совпадать'),
+      otherwise: schema => schema.notRequired(),
+    }),
+  name: yup
+    .string()
+    .when('isForm', {
+      is: () => isForm.value === 'register', // Условие для регистрации
+      then: schema => schema.required('Имя обязательно'),
+      otherwise: schema => schema.notRequired(),
+    }),
+  surname: yup
+    .string()
+    .when('isForm', {
+      is: () => isForm.value === 'register', // Условие для регистрации
+      then: schema => schema.required('Фамилия обязательна'),
+      otherwise: schema => schema.notRequired(),
+    })
 })
 
 // Инициализируем форму с этой схемой валидации
@@ -39,18 +60,17 @@ const { handleSubmit, resetForm } = useForm({
 
 // Инициализируем поля формы
 const { value: email, errorMessage: emailError, handleBlur: blurEmail } = useField('email')
-const {
-  value: password,
-  errorMessage: passwordError,
-  handleBlur: blurPassword
-} = useField('password')
+const { value: password, errorMessage: passwordError, handleBlur: blurPassword } = useField('password')
+const { value: confirmPassword, errorMessage: confirmPasswordError, handleBlur: blurConfirmPassword } = useField('confirmPassword')
+const { value: name, errorMessage: nameError, handleBlur: blurName } = useField('name')
+const { value: surname, errorMessage: surnameError, handleBlur: blurSurname } = useField('surname')
 
 // Обработка отправки формы
 const onSubmitForm = handleSubmit(async (values) => {
   try {
     if (isForm.value === 'login') {
       await store.dispatch('auth/login', values)
-    } else if(isForm.value === 'register') {
+    } else {
       await store.dispatch('auth/register', values)
     }
     resetForm()
@@ -74,6 +94,32 @@ onMounted(() => {
   <form class="form">
     <h1 class="form__title">{{ formTitle }}</h1>
 
+    <div class="form__item" v-if="isForm === 'register'">
+      <label class="form__label" for="name">Имя</label>
+      <input
+        class="form__input"
+        id="name"
+        v-model="name"
+        @blur="blurName"
+        type="text"
+        placeholder="Введите имя"
+      />
+      <span class="form__error">{{ nameError }}</span>
+    </div>
+
+    <div class="form__item" v-if="isForm === 'register'">
+      <label class="form__label" for="surname">Фамилия</label>
+      <input
+        class="form__input"
+        id="surname"
+        v-model="surname"
+        @blur="blurSurname"
+        type="text"
+        placeholder="Введите фамилию"
+      />
+      <span class="form__error">{{ surnameError }}</span>
+    </div>
+
     <div class="form__item">
       <label class="form__label" for="email">Email</label>
       <input
@@ -88,23 +134,36 @@ onMounted(() => {
     </div>
 
     <div class="form__item">
-      <label class="form__label" for="password">Password</label>
+      <label class="form__label" for="password">Пароль</label>
       <input
         class="form__input"
         id="password"
         v-model="password"
         @blur="blurPassword"
-        type="passwordword"
+        type="password"
         placeholder="Введите пароль"
       />
       <span class="form__error">{{ passwordError }}</span>
+    </div>
+
+    <div class="form__item" v-if="isForm === 'register'">
+      <label class="form__label" for="confirmPassword">Подтвердите пароль</label>
+      <input
+        class="form__input"
+        id="confirmPassword"
+        v-model="confirmPassword"
+        @blur="blurConfirmPassword"
+        type="password"
+        placeholder="Подтвердите пароль"
+      />
+      <span class="form__error">{{ confirmPasswordError }}</span>
     </div>
 
     <div class="form__btns">
       <button class="form__btns__login" type="submit" @click.prevent="onSubmitForm">
         Отправить
       </button>
-      <button class="form__btns__reg" @click.prevent="registerForm">
+      <button class="form__btns__reg" @click.prevent="toggleForm">
         {{ isForm === 'register' ? 'Войдите' : 'Зарегистрироваться' }}
       </button>
     </div>

@@ -47,15 +47,22 @@ const authModule = {
 
     async register(
       { commit, dispatch }: ActionContext<TokenI, RootState>,
-      payload: { email: string; password: string }
+      payload: {  email: string; password: string; name: string; surname: string }
     ) {
       try {
         const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${import.meta.env.VITE_FB_KEY}`
 
-        const response = await axios.post(url, { ...payload, returnSecureToken: true })
-        const { idToken } = response.data
+        const response = await axios.post(url, { email: payload.email, password: payload.password, returnSecureToken: true })
+        const { idToken, localId  } = response.data
 
         commit('setToken', idToken)
+
+        const dbUrl = `https://online-bank-2bdf1-default-rtdb.firebaseio.com/users/${localId}.json?auth=${idToken}`
+        await axios.put(dbUrl, {
+          name: payload.name,
+          surname: payload.surname,
+          email: payload.email
+        })
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           dispatch(
