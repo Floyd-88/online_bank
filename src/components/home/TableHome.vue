@@ -2,6 +2,8 @@
 import type { RequestI } from '@/types/types'
 import { currency } from '@/utils/sum';
 import AppStatus from '../ui/AppStatus.vue';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
 defineProps<{ requests: RequestI[] }>()
 </script>
@@ -28,7 +30,9 @@ defineProps<{ requests: RequestI[] }>()
           <AppStatus :status="request.status"/>
         </td>
         <td>
-          <button class="btn-open">Открыть</button>
+          <router-link :to="`/request/${request.id}`">
+            <button class="btn-open">Открыть</button>
+          </router-link>
         </td>
       </tr>
     </tbody>

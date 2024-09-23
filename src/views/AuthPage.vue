@@ -62,7 +62,7 @@ const onSubmitForm = handleSubmit(async (values) => {
 
 onMounted(() => {
   if (route.query.message) {
-    store.dispatch('changeAlert', {
+    store.dispatch('alert/changeAlert', {
       message: error(route.query.message as string),
       type: 'warning'
     })

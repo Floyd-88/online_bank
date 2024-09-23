@@ -73,7 +73,7 @@ const { value: status } = useField('status')
         <option value="active">Активен</option>
         <option value="completed">Завершен</option>
         <option value="cancelled">Отменен</option>
-        <option value="pending">В ожидание</option>
+        <option value="pending">Выполняется</option>
       </select>
       <span class="form__request__error" v-if="errors.status">{{ errors.status }}</span>
     </div>

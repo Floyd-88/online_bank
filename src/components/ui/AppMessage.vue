@@ -12,7 +12,7 @@ const TITLE_MAP: Record<AlertI['type'], string> = {
     warning: 'Внимание!'
 }
 
-const alert = computed<AlertI | null>(() => store.getters.getAlert)
+const alert = computed<AlertI | null>(() => store.getters['alert/getAlert'])
 const title = computed(() => alert.value ? TITLE_MAP[alert.value.type] : null)
 const articleClass = computed(() => {
     if(!alert.value) return 'alert'
@@ -20,7 +20,7 @@ const articleClass = computed(() => {
  })
 
 function closeAlert() {
-    store.commit('clearAlert')
+    store.commit('alert/clearAlert')
 }
 </script>
 

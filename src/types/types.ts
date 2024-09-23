@@ -1,4 +1,4 @@
-export interface AuthState {
+export interface AlertState {
   alert: AlertI | null
 }
 
@@ -7,7 +7,7 @@ export interface AlertI {
   message: string
 }
 
-export interface TokenState {
+export interface TokenI {
   token: string | null
 }
 
@@ -21,4 +21,12 @@ export interface RequestI {
   phone: string
   sum: number
   status: 'active' | 'completed' | 'cancelled' | 'pending'
+}
+
+
+
+export interface RootState {
+alert: AlertI,
+token: TokenI,
+request: RequestI
 }

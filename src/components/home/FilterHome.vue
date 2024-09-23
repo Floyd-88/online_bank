@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const emit = defineEmits<{
   (
@@ -10,6 +10,8 @@ const emit = defineEmits<{
 
 const name = ref('')
 const status = ref<'active' | 'cancelled' | 'completed' | 'pending' | ''>('')
+
+const isActive = computed(() => name.value || status.value)
 
 watch([name, status], (val) => {
   emit('update:modelValue', {
@@ -32,9 +34,9 @@ function clickReset() {
       <option value="active">Активен</option>
       <option value="completed">Завершен</option>
       <option value="cancelled">Отменен</option>
-      <option value="pending">В ожидание</option>
+      <option value="pending">Выполняется</option>
     </select>
-    <button class="block-filters__btn" @click="clickReset">Очистить</button>
+    <button class="block-filters__btn" @click="clickReset" v-if="isActive">Очистить</button>
   </div>
 </template>
 

@@ -34,9 +34,11 @@ const requests = computed(() => {
   const allRequests: RequestI[] = store.getters['request/getRequests']
   return allRequests.filter((request) => {
     const normalizedFilterName = filter.value.name?.trim().toLowerCase() || ''
-    const normalizedRequestName = request.name.trim().toLowerCase()
+    const normalizedRequestName = request.name?.trim().toLowerCase()
 
-    const filterName = normalizedFilterName ? normalizedRequestName.includes(normalizedFilterName) : true
+    const filterName = normalizedFilterName
+      ? normalizedRequestName.includes(normalizedFilterName)
+      : true
     const filterStatus = filter.value.status ? request.status === filter.value.status : true
 
     return filterName && filterStatus
@@ -50,12 +52,13 @@ const requests = computed(() => {
       <button class="btn__create" @click="modalOpen(true)">СОЗДАТЬ</button>
     </template>
 
-    <FilterHome v-model="filter"/>
+    <FilterHome v-model="filter" />
 
     <TableHome :requests="requests" />
     <div v-if="isLoader">
       <AppLoader />
     </div>
+    <div class="request_not" v-if="requests.length === 0 && !isLoader">Заявок не найдено</div>
     <teleport to="body">
       <AppModal v-if="isModal" title="Создать заявку" @closeModal="modalOpen">
         <ModalHome @closeModal="modalOpen" />
@@ -80,5 +83,12 @@ const requests = computed(() => {
   &:hover {
     background-color: #0056b3;
   }
+}
+
+.request_not {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: 600;
 }
 </style>
