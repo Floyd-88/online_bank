@@ -9,6 +9,10 @@ function logout() {
 store.commit('auth/logout')
 router.push("/auth")
 }
+
+function openSideBar() {
+store.commit('message/setIsSideBar')
+}
 </script>
 
 <template>
@@ -17,7 +21,7 @@ router.push("/auth")
     <ul class="header__list">
       <li class="header__item"><router-link to="/">Заявки</router-link></li>
       <li class="header__item"><router-link to="/help">Помощь</router-link></li>
-      <li class="header__item"><router-link to="/message">Сообщения</router-link></li>
+      <li class="header__item header__item--message"><a @click="openSideBar">Сообщения</a></li>
       <li class="header__item"><a href="#" @click.prevent="logout">Выход</a></li>
     </ul>
   </header>
@@ -69,6 +73,10 @@ router.push("/auth")
       }
 
 
+    }
+
+    &--message {
+      cursor: pointer;
     }
 
   }

@@ -7,10 +7,6 @@ export interface AlertI {
   message: string
 }
 
-export interface TokenI {
-  token: string | null
-}
-
 export interface RequestState {
   requests: RequestI[]
 }
@@ -23,12 +19,19 @@ export interface RequestI {
   status: 'active' | 'completed' | 'cancelled' | 'pending'
 }
 
+export interface TokenI {
+  token: string | null
+}
 
+export interface MessageI {
+  isSideBar: boolean
+}
 
 export interface RootState {
-alert: AlertI,
+alert: AlertState,
 token: TokenI,
-request: RequestI
+request: RequestState,
+message: MessageI
 }
 
 export interface QuestionsI {

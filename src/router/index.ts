@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import AuthPage from '@/views/AuthPage.vue'
 import HelpPage from '@/views/HelpPage.vue'
-import MessagePage from '@/views/MessagePage.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import store from '@/store'
@@ -41,15 +40,6 @@ const router = createRouter({
           path: '/help',
           name: 'help',
           component: HelpPage,
-          meta: {
-            layout: 'main',
-            auth: true
-          }
-        },
-        {
-          path: '/message',
-          name: 'message',
-          component: MessagePage,
           meta: {
             layout: 'main',
             auth: true

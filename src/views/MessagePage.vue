@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import TheSideBar from '@/components/TheSideBar.vue';
+
 </script>
 
 <template>
-<div>Message</div>
+<TheSideBar/>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
