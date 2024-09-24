@@ -1,36 +1,45 @@
 import axios from 'axios'
 import type { ActionContext } from 'vuex'
 import { error } from '@/utils/error'
-import type { TokenI, RootState } from '@/types/types'
+import type { RootState, AuthState } from '@/types/types'
 const TOKEN_KEY = 'jwt_token'
+const USER_ID = 'user_id'
 
 const authModule = {
   namespaced: true,
-  state: (): TokenI => ({
-    token: localStorage.getItem(TOKEN_KEY)
+  state: (): AuthState => ({
+    token: localStorage.getItem(TOKEN_KEY),
+    userID: localStorage.getItem(USER_ID)
   }),
   mutations: {
-    setToken(state: TokenI, token: string) {
+    setToken(state: AuthState, token: string) {
       state.token = token
       localStorage.setItem(TOKEN_KEY, token)
     },
 
-    logout(state: TokenI) {
+    setUserId(state: AuthState, userID: string) {
+      state.userID = userID
+      localStorage.setItem(USER_ID, userID)
+    },
+
+    logout(state: AuthState) {
       state.token = null
       localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_ID)
     }
   },
 
   actions: {
     async login(
-      { commit, dispatch }: ActionContext<TokenI, RootState>,
+      { commit, dispatch }: ActionContext<AuthState, RootState>,
       payload: { email: string; password: string }
     ) {
       try {
         const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${import.meta.env.VITE_FB_KEY}`
         const response = await axios.post(url, { ...payload, returnSecureToken: true })
-        const { idToken } = response.data
+        const { idToken, localId  } = response.data
         commit('setToken', idToken)
+        commit('setUserId', localId)
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           dispatch(
@@ -46,16 +55,21 @@ const authModule = {
     },
 
     async register(
-      { commit, dispatch }: ActionContext<TokenI, RootState>,
-      payload: {  email: string; password: string; name: string; surname: string }
+      { commit, dispatch }: ActionContext<AuthState, RootState>,
+      payload: { email: string; password: string; name: string; surname: string }
     ) {
       try {
         const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${import.meta.env.VITE_FB_KEY}`
 
-        const response = await axios.post(url, { email: payload.email, password: payload.password, returnSecureToken: true })
-        const { idToken, localId  } = response.data
+        const response = await axios.post(url, {
+          email: payload.email,
+          password: payload.password,
+          returnSecureToken: true
+        })
+        const { idToken, localId } = response.data
 
         commit('setToken', idToken)
+        commit('setUserId', localId)
 
         const dbUrl = `https://online-bank-2bdf1-default-rtdb.firebaseio.com/users/${localId}.json?auth=${idToken}`
         await axios.put(dbUrl, {
@@ -63,6 +77,7 @@ const authModule = {
           surname: payload.surname,
           email: payload.email
         })
+        return true
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           dispatch(
@@ -74,14 +89,18 @@ const authModule = {
             { root: true }
           )
         }
+        return false
       }
     }
   },
   getters: {
-    getToken(state: TokenI) {
+    getToken(state: AuthState) {
       return state.token
     },
-    isAuthenticated(state: TokenI, getters: { getToken: () => string | null }): boolean {
+    getUserId(state: AuthState) {
+      return state.userID
+    },
+    isAuthenticated(state: AuthState, getters: { getToken: () => string | null }): boolean {
       return !!getters.getToken
     }
   }

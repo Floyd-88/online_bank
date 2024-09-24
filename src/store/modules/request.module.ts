@@ -28,7 +28,8 @@ const requestModule = {
     async create({ commit, dispatch }: ActionContext<RequestState, RootState>, payload: RequestI) {
       try {
         const token = store.getters['auth/getToken']
-        const { data } = await axios.post(`/requestAxios.json?auth=${token}`, payload)
+        const userId = store.getters['auth/getUserId'] 
+        const { data } = await axios.post(`/users/${userId}/requests.json?auth=${token}`, payload)
         commit('addRequest', { ...payload, id: data.name })
         dispatch(
           'alert/changeAlert',
@@ -54,7 +55,9 @@ const requestModule = {
     async load({ commit, dispatch }: ActionContext<RequestState, RootState>) {
       try {
         const token = store.getters['auth/getToken']
-        const { data } = await axios.get(`/requestAxios.json?auth=${token}`)
+        const userId = store.getters['auth/getUserId'] 
+
+        const { data } = await axios.get(`/users/${userId}/requests.json?auth=${token}`)
         if (data) {
           const request = Object.keys(data).map((id) => ({ ...data[id], id }))
           commit('setRequests', request)
@@ -86,7 +89,8 @@ const requestModule = {
     async loadOneRequest({ dispatch }: ActionContext<RequestState, RootState>, id: string) {
       try {
         const token = store.getters['auth/getToken']
-        const { data } = await axios.get(`/requestAxios/${id}.json?auth=${token}`)
+        const userId = store.getters['auth/getUserId']
+        const { data } = await axios.get(`/users/${userId}/requests/${id}.json?auth=${token}`)
         return data
       } catch (e) {
         if (e instanceof Error) {
@@ -116,7 +120,8 @@ const requestModule = {
       try {
         if (id) {
           const token = store.getters['auth/getToken']
-          const response = await axios.delete(`/requestAxios/${id}.json?auth=${token}`)
+          const userId = store.getters['auth/getUserId']
+          const response = await axios.delete(`/users/${userId}/requests/${id}.json?auth=${token}`)
           if (response.status === 200) {
             commit('filterRequest', id)
             dispatch(
@@ -168,7 +173,8 @@ const requestModule = {
       try {
         if (request) {
           const token = store.getters['auth/getToken']
-          const response = await axios.put(`/requestAxios/${request.id}.json?auth=${token}`, request
+          const userId = store.getters['auth/getUserId']
+          const response = await axios.put(`/users/${userId}/requests/${request.id}.json?auth=${token}`, request
           )
           if (response.status === 200) {
             dispatch(

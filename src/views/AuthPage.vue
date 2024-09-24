@@ -17,9 +17,11 @@ function toggleForm() {
   if (isForm.value === 'login') {
     isForm.value = 'register'
     formTitle.value = 'Регистрация'
+    resetForm()
   } else {
     isForm.value = 'login'
     formTitle.value = 'Войдите в систему'
+    resetForm()
   }
 }
 
@@ -30,27 +32,24 @@ const validationSchema = yup.object({
     .string()
     .required('Пароль обязателен')
     .min(6, 'Пароль должен быть не менее 6 символов'),
-  confirmPassword: yup
-    .string()
-    .when('isForm', {
-      is: () => isForm.value === 'register', // Условие для регистрации
-      then: schema => schema.required('Подтверждение пароля обязательно').oneOf([yup.ref('password')], 'Пароли должны совпадать'),
-      otherwise: schema => schema.notRequired(),
-    }),
-  name: yup
-    .string()
-    .when('isForm', {
-      is: () => isForm.value === 'register', // Условие для регистрации
-      then: schema => schema.required('Имя обязательно'),
-      otherwise: schema => schema.notRequired(),
-    }),
-  surname: yup
-    .string()
-    .when('isForm', {
-      is: () => isForm.value === 'register', // Условие для регистрации
-      then: schema => schema.required('Фамилия обязательна'),
-      otherwise: schema => schema.notRequired(),
-    })
+  confirmPassword: yup.string().when('isForm', {
+    is: () => isForm.value === 'register', // Условие для регистрации
+    then: (schema) =>
+      schema
+        .required('Подтверждение пароля обязательно')
+        .oneOf([yup.ref('password')], 'Пароли должны совпадать'),
+    otherwise: (schema) => schema.notRequired()
+  }),
+  name: yup.string().when('isForm', {
+    is: () => isForm.value === 'register', // Условие для регистрации
+    then: (schema) => schema.required('Имя обязательно'),
+    otherwise: (schema) => schema.notRequired()
+  }),
+  surname: yup.string().when('isForm', {
+    is: () => isForm.value === 'register', // Условие для регистрации
+    then: (schema) => schema.required('Фамилия обязательна'),
+    otherwise: (schema) => schema.notRequired()
+  })
 })
 
 // Инициализируем форму с этой схемой валидации
@@ -60,21 +59,35 @@ const { handleSubmit, resetForm } = useForm({
 
 // Инициализируем поля формы
 const { value: email, errorMessage: emailError, handleBlur: blurEmail } = useField('email')
-const { value: password, errorMessage: passwordError, handleBlur: blurPassword } = useField('password')
-const { value: confirmPassword, errorMessage: confirmPasswordError, handleBlur: blurConfirmPassword } = useField('confirmPassword')
+const {
+  value: password,
+  errorMessage: passwordError,
+  handleBlur: blurPassword
+} = useField('password')
+const {
+  value: confirmPassword,
+  errorMessage: confirmPasswordError,
+  handleBlur: blurConfirmPassword
+} = useField('confirmPassword')
 const { value: name, errorMessage: nameError, handleBlur: blurName } = useField('name')
 const { value: surname, errorMessage: surnameError, handleBlur: blurSurname } = useField('surname')
 
 // Обработка отправки формы
 const onSubmitForm = handleSubmit(async (values) => {
   try {
+    let success = false
+
     if (isForm.value === 'login') {
       await store.dispatch('auth/login', values)
+      success = true
     } else {
-      await store.dispatch('auth/register', values)
+      success = await store.dispatch('auth/register', values)
     }
-    resetForm()
-    router.push('/')
+
+    if (success) {
+      resetForm()
+      router.push('/')
+    }
   } catch (e) {
     console.log(e)
   }

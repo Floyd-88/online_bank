@@ -32,7 +32,8 @@ onMounted(async () => {
 
 const requests = computed(() => {
   const allRequests: RequestI[] = store.getters['request/getRequests']
-  return allRequests.filter((request) => {
+  if(allRequests) {
+    return allRequests.filter((request) => {
     const normalizedFilterName = filter.value.name?.trim().toLowerCase() || ''
     const normalizedRequestName = request.name?.trim().toLowerCase()
 
@@ -43,6 +44,10 @@ const requests = computed(() => {
 
     return filterName && filterStatus
   })
+  } else {
+    return []
+  }
+
 })
 </script>
 

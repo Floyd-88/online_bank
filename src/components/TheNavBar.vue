@@ -7,6 +7,7 @@ const router = useRouter()
 
 function logout() {
 store.commit('auth/logout')
+store.commit('request/setRequests', [])
 router.push("/auth")
 }
 

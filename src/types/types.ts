@@ -19,8 +19,17 @@ export interface RequestI {
   status: 'active' | 'completed' | 'cancelled' | 'pending'
 }
 
-export interface TokenI {
-  token: string | null
+// export interface TokenI {
+//   token: string | null
+// }
+
+// export interface UserID_I {
+//   userID: string | null
+// }
+
+export interface AuthState {
+  token: string | null,
+  userID: string | null
 }
 
 export interface MessageI {
@@ -29,7 +38,7 @@ export interface MessageI {
 
 export interface RootState {
 alert: AlertState,
-token: TokenI,
+token: AuthState,
 request: RequestState,
 message: MessageI
 }
