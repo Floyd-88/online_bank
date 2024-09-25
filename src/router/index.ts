@@ -6,6 +6,7 @@ import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import store from '@/store'
 import RequestPage from '@/views/RequestPage.vue'
+import NotFoundPage from '@/views/NotFoundPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,15 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFoundPage,
+      meta: {
+        layout: 'main',
+        auth: false
+      }
     }
   ]
 })
@@ -71,7 +81,7 @@ router.beforeEach((to, from, next) => {
   const isAuth = store.getters['auth/isAuthenticated']
 
   if (requireAuth && !isAuth) {
-    next('/auth?message=auth')
+    return next('/auth?message=auth')
   } else {
     next()
   }

@@ -19,7 +19,7 @@ store.commit('message/setIsSideBar')
 <template>
   <header class="header">
     <h1 class="header__title">Online Bank</h1>
-    <ul class="header__list">
+    <ul class="header__list" v-if="store.getters['auth/isAuthenticated']">
       <li class="header__item"><router-link to="/">Заявки</router-link></li>
       <li class="header__item"><router-link to="/help">Помощь</router-link></li>
       <li class="header__item header__item--message"><a @click="openSideBar">Сообщения</a></li>
